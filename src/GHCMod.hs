@@ -93,14 +93,11 @@ instance Exception GHCModError
 
 ----------------------------------------------------------------
 
-main :: IO ()
-main = flip E.catches handlers $ do
--- #if __GLASGOW_HASKELL__ >= 611
-    hSetEncoding stdout utf8
--- #endif
-    args <- getArgs
+evaluateRequest :: [String] -> IO String
+evaluateRequest args = do
     let (opt,cmdArg) = parseArgs argspec args
     cradle <- findCradle
+
     let cmdArg0 = cmdArg !. 0
         cmdArg1 = cmdArg !. 1
         cmdArg3 = cmdArg !. 3
@@ -109,7 +106,7 @@ main = flip E.catches handlers $ do
         nArgs n f = if length remainingArgs == n
                         then f
                         else E.throw (TooManyArguments cmdArg0)
-    res <- case cmdArg0 of
+    case cmdArg0 of
       "list"    -> listModules opt cradle
       "lang"    -> listLanguages opt
       "flag"    -> listFlags opt
@@ -127,12 +124,33 @@ main = flip E.catches handlers $ do
       "version" -> return progVersion
       "help"    -> return $ O.usageInfo usage argspec
       cmd       -> E.throw (NoSuchCommand cmd)
-    putStr res
+
+  where
+    xs !. idx
+      | length xs <= idx = E.throw SafeList
+      | otherwise = xs !! idx
+    withFile cmd file = do
+        exist <- doesFileExist file
+        if exist
+            then cmd file
+            else E.throw (FileNotExist file)
+
+----------------------------------------------------------------
+
+main :: IO ()
+main = flip E.catches handlers $ do
+-- #if __GLASGOW_HASKELL__ >= 611
+    hSetEncoding stdout utf8
+-- #endif
+    getArgs >>= evaluateRequest >>= putStrLn
+
   where
     handlers = [Handler (handleThenExit handler1), Handler (handleThenExit handler2)]
     handleThenExit handler e = handler e >> exitFailure
+
     handler1 :: ErrorCall -> IO ()
     handler1 = print -- for debug
+
     handler2 :: GHCModError -> IO ()
     handler2 SafeList = printUsage
     handler2 (TooManyArguments cmd) = do
@@ -147,12 +165,6 @@ main = flip E.catches handlers $ do
     handler2 (FileNotExist file) = do
         hPutStrLn stderr $ "\"" ++ file ++ "\" not found"
         printUsage
+
     printUsage = hPutStrLn stderr $ '\n' : O.usageInfo usage argspec
-    withFile cmd file = do
-        exist <- doesFileExist file
-        if exist
-            then cmd file
-            else E.throw (FileNotExist file)
-    xs !. idx
-      | length xs <= idx = E.throw SafeList
-      | otherwise = xs !! idx
+

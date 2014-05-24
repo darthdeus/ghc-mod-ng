@@ -84,6 +84,8 @@ Library
   Build-Depends:        base >= 4.0 && < 5
                       , bytestring
                       , containers
+                      , conduit
+                      , conduit-extra
                       , deepseq
                       , directory
                       , filepath
@@ -100,6 +102,7 @@ Library
                       , transformers-base
                       , mtl
                       , monad-control
+                      , resourcet
                       , split
   if impl(ghc < 7.7)
     Build-Depends:      convertible
