@@ -49,6 +49,7 @@ progVersion = "ghc-mod version " ++ showVersion version ++ " compiled by GHC " +
 ghcOptHelp :: String
 ghcOptHelp = " [-g GHC_opt1 -g GHC_opt2 ...] "
 
+----------------------------------------------------------------
 
 usage :: String
 usage =    progVersion
@@ -72,8 +73,6 @@ usage =    progVersion
         ++ "\n"
         ++ "<module> for \"info\" and \"type\" is not used, anything is OK.\n"
         ++ "It is necessary to maintain backward compatibility.\n"
-----------------------------------------------------------------
-
 
 ----------------------------------------------------------------
 

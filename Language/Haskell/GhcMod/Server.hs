@@ -16,6 +16,8 @@ import qualified Data.Conduit.List as CL
 import Control.Monad.Trans.Resource
 import Control.Monad.IO.Class
 
+import Language.Haskell.GhcMod.Evaluator
+
 runServer :: IO ()
 runServer = runResourceT $ do
     void $ register $ removeLink "mod.sock"
@@ -23,7 +25,7 @@ runServer = runResourceT $ do
     liftIO $ runUnixServer settings (\ad -> (appSource ad) $$ CL.mapM evaluateThingy =$ (appSink ad))
 
 evaluateThingy :: BS.ByteString -> IO BS.ByteString
-evaluateThingy foo = return . BS.pack $ ("OK test response" ++) $ BS.unpack foo
+evaluateThingy = fmap BS.pack . evaluateRequest . words . BS.unpack
 
 socketPath :: FilePath -> FilePath
 socketPath path = path </> "ghc-mod.sock"
