@@ -27,6 +27,7 @@ module Language.Haskell.GhcMod (
   , rootInfo
   , packageDoc
   , findSymbol
+  , evaluateRequest
   ) where
 
 import Language.Haskell.GhcMod.Boot
@@ -34,6 +35,7 @@ import Language.Haskell.GhcMod.Browse
 import Language.Haskell.GhcMod.Check
 import Language.Haskell.GhcMod.Cradle
 import Language.Haskell.GhcMod.Debug
+import Language.Haskell.GhcMod.Evaluator
 import Language.Haskell.GhcMod.Find
 import Language.Haskell.GhcMod.Flag
 import Language.Haskell.GhcMod.Info
