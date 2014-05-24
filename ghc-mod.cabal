@@ -82,6 +82,7 @@ Library
                         Language.Haskell.GhcMod.Types
                         Language.Haskell.GhcMod.Read
   Build-Depends:        base >= 4.0 && < 5
+                      , bytestring
                       , containers
                       , deepseq
                       , directory

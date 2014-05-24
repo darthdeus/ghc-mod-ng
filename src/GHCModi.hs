@@ -98,12 +98,10 @@ main = E.handle cmdHandler $
     go (opt,_) = E.handle someHandler $ do
         cradle0 <- findCradle
         let rootdir = cradleRootDir cradle0
-            cradle = cradle0 { cradleCurrentDir = rootdir }
         setCurrentDirectory rootdir
         mvar <- liftIO newEmptyMVar
-        mlibdir <- getSystemLibDir
-        void $ forkIO $ setupDB cradle mlibdir opt mvar
-        run cradle mlibdir opt $ loop opt S.empty mvar
+        void $ forkIO $ setupDB opt mvar
+        run opt $ loop opt S.empty mvar
       where
         -- this is just in case.
         -- If an error is caught here, it is a bug of GhcMod library.
@@ -117,16 +115,16 @@ replace (x:xs)    =  x  : replace xs
 
 ----------------------------------------------------------------
 
-run :: Cradle -> Maybe FilePath -> Options -> GhcMod a -> IO a
-run _ _ opt body = runGhcMod opt $ do
+run :: Options -> GhcMod a -> IO a
+run opt body = runGhcMod opt $ do
     dflags <- G.getSessionDynFlags
     G.defaultCleanupHandler dflags body
 
 ----------------------------------------------------------------
 
-setupDB :: Cradle -> Maybe FilePath -> Options -> MVar SymMdlDb -> IO ()
-setupDB cradle mlibdir opt mvar = E.handle handler $ do
-    db <- run cradle mlibdir opt getSymMdlDb
+setupDB :: Options -> MVar SymMdlDb -> IO ()
+setupDB opt mvar = E.handle handler $ do
+    db <- run opt getSymMdlDb
     putMVar mvar db
   where
     handler (SomeException _) = return () -- fixme: put emptyDb?
