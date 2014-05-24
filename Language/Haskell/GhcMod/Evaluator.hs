@@ -1,6 +1,9 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 module Language.Haskell.GhcMod.Evaluator (
   evaluateRequest
+  , argspec
+  , usage
+  , GHCModError(..)
 ) where
 
 import Config (cProjectVersion)

@@ -28,6 +28,10 @@ module Language.Haskell.GhcMod (
   , packageDoc
   , findSymbol
   , evaluateRequest
+  , usage
+  , argspec
+  , GHCModError(..)
+  , runServer
   ) where
 
 import Language.Haskell.GhcMod.Boot
@@ -44,3 +48,4 @@ import Language.Haskell.GhcMod.Lint
 import Language.Haskell.GhcMod.List
 import Language.Haskell.GhcMod.PkgDoc
 import Language.Haskell.GhcMod.Types
+import Language.Haskell.GhcMod.Server
